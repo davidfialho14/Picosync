@@ -42,7 +42,7 @@ def getUserKey(username):
 
         keysFile.close()
 
-    return userKey, 0
+    return userKey
 
 def parseArgs():
     defaultDirectory = "./"    # default directory is the current directory
@@ -104,12 +104,14 @@ def main():
 
     # put the main program waiting for a keyboard interrupt
     try:
+        print("running...")
         while True:
             syncHandler.update()
             time.sleep(timeout)
     except KeyboardInterrupt:
         observer.stop()
 
+    print("closing...")
     observer.join()
 
 # start the main
