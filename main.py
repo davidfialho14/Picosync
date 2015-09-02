@@ -45,6 +45,16 @@ def getUserKey(username):
     return userKey
 
 def main():
+
+    # remove the first argument from the sys args
+    args = sys.argv[1:]
+
+    # check the arguments and get directory to watch
+    directory = args[0] if args else "./"
+    if not path.exists(directory) or not path.isdir(directory):
+        print("usage: exec <watch directory>")
+        sys.exit(-1)
+
     appKey = "1tgi3eh3hq78u34"
     appSecret = "gbme5pduzne981p"
 
@@ -56,7 +66,7 @@ def main():
 
     # check the database for the user key
     userKey = getUserKey(username)
-    
+
     if not userKey:
         # user key was not found -> new user
         # get new user authorization
@@ -71,12 +81,9 @@ def main():
     # get a dropbox client for the access token
     client = dropbox.client.DropboxClient(userKey)
 
-    # remove the first argument from the sys args
-    args = sys.argv[1:]
-
     # schedule the observer
     observer = Observer()
-    observer.schedule(monitor.SyncHandler(client), args[0] if args else '.')
+    observer.schedule(monitor.SyncHandler(client), directory)
     observer.start()
 
     # put the main program waiting for a keyboard interrupt
