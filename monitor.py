@@ -23,7 +23,7 @@ class SyncHandler(PatternMatchingEventHandler):
 
             # update file to the dropbox server
             file = open(filepath, "rb")
-            self.client.put_file(filename, file, overwrite=True)
+            self.client.put_file(path.basename(filename), file, overwrite=True)
             print("file updated in dropbox: ", filename)
             file.close()
 
