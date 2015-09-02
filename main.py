@@ -94,17 +94,18 @@ def main():
         keysFile.flush()
         keysFile.close()
 
-    # get a dropbox client for the access token
-    client = dropbox.client.DropboxClient(userKey)
+    # get a sync handler
+    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), directory)
 
     # schedule the observer
     observer = Observer()
-    observer.schedule(monitor.SyncHandler(client, directory), directory)
+    observer.schedule(syncHandler, directory)
     observer.start()
 
     # put the main program waiting for a keyboard interrupt
     try:
         while True:
+            syncHandler.update()
             time.sleep(timeout)
     except KeyboardInterrupt:
         observer.stop()
