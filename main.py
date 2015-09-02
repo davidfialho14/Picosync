@@ -83,7 +83,7 @@ def main():
 
     # schedule the observer
     observer = Observer()
-    observer.schedule(monitor.SyncHandler(client), directory)
+    observer.schedule(monitor.SyncHandler(client, directory), directory)
     observer.start()
 
     # put the main program waiting for a keyboard interrupt
