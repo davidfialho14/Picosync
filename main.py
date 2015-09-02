@@ -44,13 +44,29 @@ def getUserKey(username):
 
     return userKey
 
+def parseArgs():
+    defaultDirectory = "./"    # default directory is the current directory
+    defaultTimeout = 30        # default timeout is 30 seconds
+
+    if len(sys.argv) == 1:
+        directory = defaultDirectory
+        timeout = defaultTimeout
+    elif len(sys.argv) == 2:
+        directory = str(sys.argv[1])
+        timeout = defaultTimeout
+    elif len(sys.argv) == 3:
+        directory = str(sys.argv[1])
+        timeout = float(sys.argv[2])
+    else:
+        print("usage: exec <watch directory> <update period")
+        sys.exit(-1)
+
+    return directory, timeout
+
 def main():
 
-    # remove the first argument from the sys args
-    args = sys.argv[1:]
+    directory, timeout = parseArgs()
 
-    # check the arguments and get directory to watch
-    directory = args[0] if args else "./"
     if not path.exists(directory) or not path.isdir(directory):
         print("usage: exec <watch directory>")
         sys.exit(-1)
@@ -78,21 +94,24 @@ def main():
         keysFile.flush()
         keysFile.close()
 
-    # get a dropbox client for the access token
-    client = dropbox.client.DropboxClient(userKey)
+    # get a sync handler
+    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), directory)
 
     # schedule the observer
     observer = Observer()
-    observer.schedule(monitor.SyncHandler(client, directory), directory)
+    observer.schedule(syncHandler, directory)
     observer.start()
 
     # put the main program waiting for a keyboard interrupt
     try:
+        print("running...")
         while True:
-            time.sleep(1)
+            syncHandler.update()
+            time.sleep(timeout)
     except KeyboardInterrupt:
         observer.stop()
 
+    print("closing...")
     observer.join()
 
 # start the main
