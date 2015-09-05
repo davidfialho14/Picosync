@@ -1,11 +1,12 @@
 import dropbox
 import os.path as path
+from os import environ
 import sys
 import time
 from watchdog.observers import Observer
 import monitor
 
-keysFilename = ".keys"
+keysFilename = environ['HOME'] + "/.picosync-keys"
 
 def authorizeDropbox(flow):
     # Have the user sign in and authorize this token
