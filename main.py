@@ -45,30 +45,36 @@ def getUserKey(username):
     return userKey
 
 def parseArgs():
-    defaultDirectory = "./"    # default directory is the current directory
-    defaultTimeout = 30        # default timeout is 30 seconds
-
-    if len(sys.argv) == 1:
-        directory = defaultDirectory
-        timeout = defaultTimeout
-    elif len(sys.argv) == 2:
-        directory = str(sys.argv[1])
-        timeout = defaultTimeout
-    elif len(sys.argv) == 3:
-        directory = str(sys.argv[1])
-        timeout = float(sys.argv[2])
-    else:
-        print("usage: exec <watch directory> <update period")
+    if len(sys.argv) < 2 or len(sys.argv) > 5:
+        print("usage: exec <username>* <watch directory> <dropbox directory> <update period>")
+        print("the arguments with a star (*) are mandatory")
+        print("the update period must be a number (in seconds)")
         sys.exit(-1)
 
-    return directory, timeout
+    # mandatory argument
+    username = sys.argv[1]
+    # default watch directory is the current directory
+    watchDirectory = str(sys.argv[2]) if len(sys.argv) > 2 else "./"
+    # default destination directory
+    destDirectory = str(sys.argv[3]) if len(sys.argv) > 3 else "./"
+    # default timeout is 30 seconds
+    timeout = float(sys.argv[4]) if len(sys.argv) > 4 else 30.0
+
+    return username, watchDirectory, destDirectory, timeout
 
 def main():
 
-    directory, timeout = parseArgs()
+    username, watchDirectory, destDirectory, timeout = parseArgs()
 
-    if not path.exists(directory) or not path.isdir(directory):
-        print("usage: exec <watch directory>")
+    print("username: " + username)
+    print("watch directory: " + watchDirectory)
+    print("dropbox directory: " + destDirectory)
+    print("timeout: %f seconds" % timeout)
+    print()
+
+    if not path.exists(watchDirectory) or not path.isdir(watchDirectory):
+        print("watch directory doesn't exist")
+        print("please check if the path you introduced is a valid directory")
         sys.exit(-1)
 
     appKey = "1tgi3eh3hq78u34"
@@ -76,9 +82,6 @@ def main():
 
     # authorize the app
     flow = dropbox.client.DropboxOAuth2FlowNoRedirect(appKey, appSecret)
-
-    # get user name to identify the login
-    username = input("dropbox username: ")
 
     # check the database for the user key
     userKey = getUserKey(username)
@@ -95,11 +98,11 @@ def main():
         keysFile.close()
 
     # get a sync handler
-    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), directory)
+    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), watchDirectory)
 
     # schedule the observer
     observer = Observer()
-    observer.schedule(syncHandler, directory)
+    observer.schedule(syncHandler, watchDirectory)
     observer.start()
 
     # put the main program waiting for a keyboard interrupt
