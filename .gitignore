@@ -4,3 +4,4 @@
 *.CSV
 /PicoSync/
 /copy.sh
+*.pyc

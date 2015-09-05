@@ -5,11 +5,10 @@ import set_queue as queue
 class SyncHandler(PatternMatchingEventHandler):
 
     def __init__(self, client, directory):
-        super().__init__()
+        super(SyncHandler, self).__init__()
 
         self.client = client
         self.directory = path.normpath(directory)
-        # queue with files to update the dropbox server
         self.updateQueue = queue.SetQueue()
 
     def update(self):

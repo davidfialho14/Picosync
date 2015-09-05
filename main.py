@@ -13,7 +13,7 @@ def authorizeDropbox(flow):
     print('1. Go to: ' + authorizeUrl)
     print('2. Click "Allow" (you might have to log in first)')
     print('3. Copy the authorization code.')
-    code = input("Enter the authorization code here: ").strip()
+    code = raw_input("Enter the authorization code here: ").strip()
 
     # This will fail if the user enters an invalid authorization code
     userKey, userId = flow.finish(code)

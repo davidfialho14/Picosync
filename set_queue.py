@@ -1,4 +1,4 @@
-import queue
+import Queue as queue
 
 class SetQueue(queue.Queue):
     # Initialize the queue representation
