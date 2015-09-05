@@ -79,7 +79,7 @@ def main():
     print("watch directory: " + watchDirectory)
     print("dropbox directory: " + destDirectory)
     print("timeout: %f seconds" % timeout)
-    print()
+    print
 
     if not path.exists(watchDirectory) or not path.isdir(watchDirectory):
         print("watch directory doesn't exist")
@@ -107,7 +107,7 @@ def main():
         keysFile.close()
 
     # get a sync handler
-    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), watchDirectory)
+    syncHandler = monitor.SyncHandler(dropbox.client.DropboxClient(userKey), watchDirectory, destDirectory)
 
     # schedule the observer
     observer = Observer()
