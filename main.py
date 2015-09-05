@@ -47,12 +47,12 @@ def getUserKey(username):
 
 def printHelp():
     print("usage: exec <username> <watch directory> <dropbox directory> <update period>")
-    print("*username: dropbox username of the account you are going to use")
-    print("watch directory: local directory to watched for new and modified files")
-    print("dropbox directory: directory in your dropbox account where the file will be stored")
-    print("update period: time interval (in seconds) between updates to the dropbox account")
+    print("\t*username:\t\t dropbox username of the account you are going to use")
+    print("\twatch directory:\t local directory to watched for new and modified files")
+    print("\tdropbox directory:\t directory in your dropbox account where the file will be stored")
+    print("\tupdate period:\t\t time interval (in seconds) between updates to the dropbox account")
 
-    print("the arguments with a star (*) are mandatory")
+    print("\n\tthe arguments with a star (*) are mandatory")
 
 def parseArgs():
 
