@@ -117,6 +117,9 @@ def main():
     # put the main program waiting for a keyboard interrupt
     try:
         print("running...")
+        print("To run in backgroud follow this steps:")
+        print("\t1.Press Ctrl-Z")
+        print("\t2.Type the command: bg")
         while True:
             syncHandler.update()
             time.sleep(timeout)

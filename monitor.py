@@ -1,16 +1,30 @@
 from watchdog.events import PatternMatchingEventHandler
 import os.path as path
 import set_queue as queue
+import os
+import datetime
 
 class SyncHandler(PatternMatchingEventHandler):
 
     def __init__(self, client, watchDirectory, destDirectory):
         super(SyncHandler, self).__init__()
 
+        self.logfileName = os.environ['HOME'] + "/.picosync-log"
+        if path.exists(self.logfileName):
+            os.remove(self.logfileName)
+
+        self.printLog("started")
+
         self.client = client
         self.watchDirectory = path.normpath(watchDirectory)
         self.destDirectory = destDirectory
         self.updateQueue = queue.SetQueue()
+
+    def printLog(self, logMessage):
+        logFile = open(self.logfileName, "a+")
+        logFile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S\t"))
+        logFile.write(logMessage + '\n')
+        logFile.close()
 
     def update(self):
         while not self.updateQueue.empty():
@@ -24,7 +38,7 @@ class SyncHandler(PatternMatchingEventHandler):
             # update file to the dropbox server
             file = open(filepath, "rb")
             self.client.put_file(path.join(self.destDirectory, path.basename(filename)), file, overwrite=True)
-            print("file updated in dropbox: ", filename)
+            self.printLog("file updated in dropbox: " + filename)
             file.close()
 
             # notify that the current task is done
@@ -33,9 +47,9 @@ class SyncHandler(PatternMatchingEventHandler):
     def on_modified(self, event):
         if not event.is_directory:
             self.updateQueue.put(event.src_path)
-            print("updated the file " + event.src_path)
+            self.printLog("updated the file " + event.src_path)
 
     def on_created(self, event):
         if not event.is_directory:
             self.updateQueue.put(event.src_path)
-            print("added the file " + event.src_path)
+            self.printLog("added the file " + event.src_path)
