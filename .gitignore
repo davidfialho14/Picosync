@@ -2,3 +2,6 @@
 /__pycache__/
 *.keys
 *.CSV
+/PicoSync/
+/copy.sh
+*.pyc

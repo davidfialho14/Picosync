@@ -4,12 +4,12 @@ import set_queue as queue
 
 class SyncHandler(PatternMatchingEventHandler):
 
-    def __init__(self, client, directory):
-        super().__init__()
+    def __init__(self, client, watchDirectory, destDirectory):
+        super(SyncHandler, self).__init__()
 
         self.client = client
-        self.directory = path.normpath(directory)
-        # queue with files to update the dropbox server
+        self.watchDirectory = path.normpath(watchDirectory)
+        self.destDirectory = destDirectory
         self.updateQueue = queue.SetQueue()
 
     def update(self):
@@ -19,11 +19,11 @@ class SyncHandler(PatternMatchingEventHandler):
 
             # ensure the pathname for the file is complete
             # in order to prevent errors indicating a file doesn't exist
-            filepath = path.join(self.directory, filename)
+            filepath = path.join(self.watchDirectory, filename)
 
             # update file to the dropbox server
             file = open(filepath, "rb")
-            self.client.put_file(path.basename(filename), file, overwrite=True)
+            self.client.put_file(path.join(self.destDirectory, path.basename(filename)), file, overwrite=True)
             print("file updated in dropbox: ", filename)
             file.close()
 

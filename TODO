@@ -1,0 +1,5 @@
+# Features
+-1. support for multiple users
+-2. update files in certain period of time
+3. at startup check if the files in directory are all in the dropbox server and update the server if needed
+4. delete files that are removed from the dropbox server by other client
