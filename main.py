@@ -5,6 +5,7 @@ import sys
 import time
 from watchdog.observers import Observer
 import monitor
+import signal
 
 keysFilename = environ['HOME'] + "/.picosync-keys"
 
@@ -71,7 +72,17 @@ def parseArgs():
 
     return username, watchDirectory, destDirectory, timeout
 
+toShutdown=False
+
+def killHandler(signal, frame):
+    global toShutdown
+    toShutdown = True
+    print("will shutdown shortly")
+
 def main():
+
+    # setup the signal handler to handle the kill signal
+    signal.signal(signal.SIGTERM, killHandler)
 
     username, watchDirectory, destDirectory, timeout = parseArgs()
 
@@ -120,14 +131,20 @@ def main():
         print("To run in backgroud follow this steps:")
         print("\t1.Press Ctrl-Z")
         print("\t2.Type the command: bg")
-        while True:
+
+        # redirect the output to the log file
+        sys.stdout = open(syncHandler.logfileName, 'a+')
+        sys.stderr = open(syncHandler.logfileName, 'a+')
+
+        while not toShutdown:
             syncHandler.update()
             time.sleep(timeout)
     except KeyboardInterrupt:
-        observer.stop()
+        print("closing...")
 
-    print("closing...")
+    observer.stop()
     observer.join()
+    print("closed")
 
 # start the main
 main()
