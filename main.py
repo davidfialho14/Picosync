@@ -1,12 +1,13 @@
 import dropbox
 import os.path as path
-from os import environ
 import sys
 import time
 from watchdog.observers import Observer
 import monitor
+import signal
+import log
 
-keysFilename = environ['HOME'] + "/.picosync-keys"
+keysFilename = path.join(log.appDirectory, "keys")
 
 def authorizeDropbox(flow):
     # Have the user sign in and authorize this token
@@ -71,7 +72,17 @@ def parseArgs():
 
     return username, watchDirectory, destDirectory, timeout
 
+toShutdown=False
+
+def killHandler(signal, frame):
+    global toShutdown
+    toShutdown = True
+    print("will shutdown shortly")
+
 def main():
+
+    # setup the signal handler to handle the kill signal
+    signal.signal(signal.SIGTERM, killHandler)
 
     username, watchDirectory, destDirectory, timeout = parseArgs()
 
@@ -85,6 +96,9 @@ def main():
         print("watch directory doesn't exist")
         print("please check if the path you introduced is a valid directory")
         sys.exit(-1)
+
+    # create all the necessary directories
+    log.createAllDirectories()
 
     appKey = "1tgi3eh3hq78u34"
     appSecret = "gbme5pduzne981p"
@@ -117,14 +131,22 @@ def main():
     # put the main program waiting for a keyboard interrupt
     try:
         print("running...")
-        while True:
+        print("To run in backgroud follow this steps:")
+        print("\t1.Press Ctrl-Z")
+        print("\t2.Type the command: bg")
+
+        # redirect the output to the log file
+        sys.stderr = open(log.logFileName, 'a+')
+
+        while not toShutdown:
             syncHandler.update()
             time.sleep(timeout)
     except KeyboardInterrupt:
-        observer.stop()
+        print("closing...")
 
-    print("closing...")
+    observer.stop()
     observer.join()
+    print("closed")
 
 # start the main
 main()
