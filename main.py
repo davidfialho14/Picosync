@@ -1,13 +1,13 @@
 import dropbox
 import os.path as path
-from os import environ
 import sys
 import time
 from watchdog.observers import Observer
 import monitor
 import signal
+import log
 
-keysFilename = environ['HOME'] + "/.picosync-keys"
+keysFilename = path.join(log.appDirectory, "keys")
 
 def authorizeDropbox(flow):
     # Have the user sign in and authorize this token
@@ -97,6 +97,9 @@ def main():
         print("please check if the path you introduced is a valid directory")
         sys.exit(-1)
 
+    # create all the necessary directories
+    log.createAllDirectories()
+
     appKey = "1tgi3eh3hq78u34"
     appSecret = "gbme5pduzne981p"
 
@@ -133,8 +136,7 @@ def main():
         print("\t2.Type the command: bg")
 
         # redirect the output to the log file
-        sys.stdout = open(syncHandler.logfileName, 'a+')
-        sys.stderr = open(syncHandler.logfileName, 'a+')
+        sys.stderr = open(log.logFileName, 'a+')
 
         while not toShutdown:
             syncHandler.update()
