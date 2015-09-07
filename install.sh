@@ -37,12 +37,17 @@ echo "modules installed"
 
 # installation directory
 install_dir="/opt/picosync"
+sources_dir="./"
+
 
 # create installation directory
 sudo mkdir -p $install_dir
 # copy needed sources to the installation directory
 sudo rm -rf	$install_dir/sources
-sudo cp -fR .sources/ $install_dir/sources
+# create installation sources directory
+sudo mkdir -p $install_dir/sources
+# copy sourcs to the installation directory
+sudo cp -fR $sources_dir/*.py $install_dir/sources
 
 # create execution script
 sudo sh -c "echo '#!/bin/bash \npython /opt/picosync/sources/main.py \$@' > $install_dir/picosync"
