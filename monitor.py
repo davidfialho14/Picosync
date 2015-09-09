@@ -34,7 +34,7 @@ class SyncHandler(PatternMatchingEventHandler):
             try:
                 self.client.put_file(path.join(self.destDirectory, path.basename(filename)), file, overwrite=True)
                 log.printLog("file updated to dropbox: " + filename)
-            except urllib3.exceptions.MaxRetryError:
+            except (urllib3.exceptions.MaxRetryError, dropbox.rest.ErrorResponse):
                 log.printLog("failed to upload: " + filename)
                 # add file to the list of failed files
                 filesFailed.append(filename)
